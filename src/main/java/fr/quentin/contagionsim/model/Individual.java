@@ -13,7 +13,7 @@ public class Individual {
     /**
      * The chance of death for an individual that is infected with disease
      */
-    private double CHANCE_OF_DEATH = 0.06;
+    private double chanceOfDeath = 0.06;
 
     /**
      * The x position of the individual
@@ -76,6 +76,7 @@ public class Individual {
      * The number of iteration the individual has been infected
      */
     private int timeInfected = 0;
+    private double initSpeed;
 
     public int getX() {
         return x;
@@ -123,6 +124,7 @@ public class Individual {
 
     public void setSpeed(double speed) {
         this.speed = speed;
+        initSpeed = speed;
     }
 
     public void setState(State state) {
@@ -138,8 +140,8 @@ public class Individual {
         this.radius = radius;
     }
 
-    public void setCHANCE_OF_DEATH(double CHANCE_OF_DEATH) {
-        this.CHANCE_OF_DEATH = CHANCE_OF_DEATH;
+    public void setChanceOfDeath(double chanceOfDeath) {
+        this.chanceOfDeath = chanceOfDeath;
     }
 
     public Individual() {
@@ -153,6 +155,7 @@ public class Individual {
         dx = Math.random() > 0.5? 1: -1;
         dy = Math.random() > 0.5? 1: -1;
         speed = 1;
+        initSpeed = 1;
         direction = (int) (Math.random() * 360);
 
         state = State.HEALTHY;
@@ -301,7 +304,7 @@ public class Individual {
             }
 
             if (timeInfected == 400) {
-                if (Math.random() < CHANCE_OF_DEATH)
+                if (Math.random() < chanceOfDeath)
                     setState(State.DEAD);
             }
 
@@ -310,14 +313,14 @@ public class Individual {
             }
         }
 
-        if (containment && speed != 0.1 && (state == State.DIAGNOSED))
-            speed = 0.1;
+        if (containment && speed != initSpeed * 0.1 && (state == State.DIAGNOSED))
+            speed = initSpeed * 0.1;
 
-        else if (containment && speed != 0.5 && state == State.IMMUNE)
-            speed = 0.5;
+        else if (containment && speed != initSpeed * 0.5 && state == State.IMMUNE)
+            speed = initSpeed * 0.5;
 
-        else if (containment && speed > 0.5 && !(state == State.DEAD))
-            speed = 0.5;
+        else if (containment && speed > initSpeed * 0.5 && !(state == State.DEAD))
+            speed = initSpeed * 0.5;
 
 
     }

@@ -3,7 +3,6 @@ package fr.quentin.contagionsim.model;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -20,6 +19,8 @@ public class Game {
     public static final int V_INDIV_DEFAULT = 1;
     public static final int T_INDIV_DEFAULT = 10;
     public static final int PERSONNES_INFECTES_DEPART_DEFAULT = 1;
+    public static final double TAUX_MORTAL_DEFAULT = 0.06;
+    public static final int TAUX_CONTAG_DEFAULT = 1;
 
     /**
      * Liste des individus
@@ -51,19 +52,14 @@ public class Game {
      */
     private boolean lockdown = false;
 
-    private int nbIndiv;
-
-    private double vIndiv;
-
-    private int tIndiv;
-
-    private int personnesInfectesDepart;
+    private int nbIndiv, tIndiv, personnesInfectesDepart;
+    private double vIndiv, tauxContag,  tauxMortal;
 
     public Game(int width, int height) {
-        this(width, height, NBINDIV_DEFAULT, V_INDIV_DEFAULT, T_INDIV_DEFAULT, PERSONNES_INFECTES_DEPART_DEFAULT);
+        this(width, height, NBINDIV_DEFAULT, V_INDIV_DEFAULT, T_INDIV_DEFAULT, PERSONNES_INFECTES_DEPART_DEFAULT, TAUX_CONTAG_DEFAULT, TAUX_MORTAL_DEFAULT);
     }
 
-    public Game(int width, int height, int nbIndiv, double vIndiv, int tIndiv, int personnesInfectesDepart) {
+    public Game(int width, int height, int nbIndiv, double vIndiv, int tIndiv, int personnesInfectesDepart, double tauxContag, double tauxMortal) {
         individuals = new ArrayList<>();
         deadIndividuals = new ArrayList<>();
         this.width = width;
@@ -72,10 +68,12 @@ public class Game {
         this.vIndiv = vIndiv;
         this.tIndiv = tIndiv;
         this.personnesInfectesDepart = personnesInfectesDepart;
+        this.tauxContag = tauxContag;
+        this.tauxMortal = tauxMortal;
     }
 
     public Game(Game game) {
-        this(game.width, game.height, game.nbIndiv, game.vIndiv, game.tIndiv, game.personnesInfectesDepart);
+        this(game.width, game.height, game.nbIndiv, game.vIndiv, game.tIndiv, game.personnesInfectesDepart, game.tauxContag, game.tauxMortal);
     }
 
     public int getWidth() {
@@ -96,6 +94,10 @@ public class Game {
 
     public ArrayList<Individual> getIndividuals() {
         return individuals;
+    }
+
+    public ArrayList<Individual> getDeadIndividuals() {
+        return deadIndividuals;
     }
 
     /**
@@ -132,6 +134,7 @@ public class Game {
 
             individual.setSpeed(vIndiv);
             individual.setRadius(tIndiv);
+            individual.setChanceOfDeath(tauxMortal);
             individuals.add(individual);
         }
 
@@ -188,11 +191,11 @@ public class Game {
         if (i1.getState() == State.IMMUNE || i2.getState() == State.IMMUNE)
             return;
 
-        if ((i1.getState() == State.INFECTED || i1.getState() == State.DIAGNOSED) && i2.getState() == State.HEALTHY) {
+        if ((i1.getState() == State.INFECTED || i1.getState() == State.DIAGNOSED) && i2.getState() == State.HEALTHY && Math.random() < tauxContag) {
             i2.setState(State.INFECTED);
         }
 
-        if ((i2.getState() == State.INFECTED || i2.getState() == State.DIAGNOSED) && i1.getState() == State.HEALTHY) {
+        if ((i2.getState() == State.INFECTED || i2.getState() == State.DIAGNOSED) && i1.getState() == State.HEALTHY && Math.random() < tauxContag) {
             i1.setState(State.INFECTED);
         }
 

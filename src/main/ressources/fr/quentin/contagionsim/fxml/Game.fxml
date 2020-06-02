@@ -6,35 +6,89 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
-<HBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.quentin.contagionsim.controller.MainController">
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.quentin.contagionsim.controller.MainController">
    <children>
-    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS">
-      <children>
-            <Canvas fx:id="mainCanvas" height="500.0" layoutX="14.0" layoutY="14.0" width="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <cursor>
-                  <Cursor fx:constant="N_RESIZE" />
-               </cursor>
-            </Canvas>
-      </children>
-    </AnchorPane>
-      <Separator orientation="VERTICAL" prefHeight="200.0" />
-      <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+      <HBox>
          <children>
-            <Label text="Label" />
-            <Label layoutX="10.0" layoutY="10.0" text="Label" />
-            <Label layoutX="10.0" layoutY="26.0" text="Label" />
-            <Label layoutX="10.0" layoutY="42.0" text="Label" />
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                  <Canvas fx:id="mainCanvas" height="500.0" width="500.0" VBox.vgrow="ALWAYS">
+                     <cursor>
+                        <Cursor fx:constant="N_RESIZE" />
+                     </cursor>
+                  </Canvas>
+               </children>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="20.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="30.0">
+                     <children>
+                        <Label fx:id="healthy" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="En bonne santé : 0" HBox.hgrow="ALWAYS" />
+                        <Circle fill="cadetblue" radius="6.0" stroke="cadetblue" strokeType="INSIDE" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="20.0" layoutY="20.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="30.0">
+                     <children>
+                        <Label fx:id="infected" maxWidth="1.7976931348623157E308" text="Atteint : 0" HBox.hgrow="ALWAYS" />
+                        <Circle fill="lawngreen" radius="6.0" stroke="lawngreen" strokeType="INSIDE" HBox.hgrow="ALWAYS" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="20.0" layoutY="194.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="30.0">
+                     <children>
+                        <Label fx:id="diagnosed" maxWidth="1.7976931348623157E308" text="Diagnostiqué : 0" HBox.hgrow="ALWAYS" />
+                        <Circle fill="darkred" radius="6.0" stroke="darkred" strokeType="INSIDE" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="20.0" layoutY="230.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="30.0">
+                     <children>
+                        <Label fx:id="immune" maxWidth="1.7976931348623157E308" text="Immunisé : 0" HBox.hgrow="ALWAYS" />
+                        <Circle fill="lightpink" radius="6.0" stroke="lightpink" strokeType="INSIDE" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER" layoutX="20.0" layoutY="266.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="30.0">
+                     <children>
+                        <Label fx:id="dead" maxWidth="1.7976931348623157E308" text="Décédé : 0" HBox.hgrow="ALWAYS" />
+                        <Circle fill="black" radius="6.0" stroke="black" strokeType="INSIDE" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+         </children>
+      </HBox>
+      <Separator prefWidth="200.0" />
+      <HBox alignment="CENTER" spacing="50.0" VBox.vgrow="ALWAYS">
+         <children>
             <Button mnemonicParsing="false" onAction="#runGame" text="Recommencer" />
             <Button mnemonicParsing="false" onAction="#backToMenu" text="Retourner au menu" />
             <Button mnemonicParsing="false" onAction="#pause" text="Pause" />
          </children>
          <padding>
-            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </padding>
-      </VBox>
+      </HBox>
    </children>
-</HBox>
+</VBox>

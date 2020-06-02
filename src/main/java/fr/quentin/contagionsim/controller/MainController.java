@@ -6,13 +6,13 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.fxml.FXML;
@@ -20,6 +20,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * The main main.java.fr.quentin.contagionsim.controller for the game.
@@ -34,6 +36,7 @@ public class MainController {
     private Canvas mainCanvas;
 
     @FXML
+    private Label healthy, infected, diagnosed, immune, dead;
     private Stage stage;
     private Game game;
     private Timeline updateGame;
@@ -51,15 +54,6 @@ public class MainController {
      */
     public void init() {
 
-        stage.widthProperty().addListener((observable, oldValue, newValue) -> {
-            mainCanvas.widthProperty().bind(((AnchorPane) mainCanvas.getParent()).widthProperty());
-            mainCanvas.heightProperty().bind(((AnchorPane) mainCanvas.getParent()).heightProperty());
-            if (game != null) {
-                game.setWidth((int) mainCanvas.getWidth());
-                game.setHeight((int) mainCanvas.getHeight());
-            }
-        });
-
         mainCanvas.setCursor(Cursor.DEFAULT);
 
     }
@@ -68,65 +62,31 @@ public class MainController {
      * Function used to run the game. The game update every 10ms. Changing this value
      * may cause unexpected behaviours.
      */
-    public void runGame(int nbIndiv, double vIndiv, int tIndiv, int tauxIndiv, int tauxContag, int tauxMortal) {
+    public void runGame(int nbIndiv, double vIndiv, int tIndiv, int tauxIndiv, double tauxContag, double tauxMortal) {
 
         int personnesInfectesDepart = (int) (tauxIndiv / 100.0 * nbIndiv);
 
-        game = new Game((int) mainCanvas.getWidth(), (int) mainCanvas.getHeight(), nbIndiv, vIndiv, tIndiv, personnesInfectesDepart);
+        game = new Game((int) mainCanvas.getWidth(), (int) mainCanvas.getHeight(), nbIndiv, vIndiv, tIndiv, personnesInfectesDepart, tauxContag, tauxMortal);
 
         runGame();
 
     }
     public void runGame() {
 
-        Game game = new Game(this.game);
+        game = new Game(this.game);
 
         game.initialise();
 
         GraphicsContext gc = mainCanvas.getGraphicsContext2D();
 
-        updateGame = new Timeline(new KeyFrame(Duration.millis(10), new EventHandler<ActionEvent>() {
+        if (updateGame != null)
+            updateGame.stop();
 
-            @Override
-            public void handle(ActionEvent event) {
-                game.update(gc);
+        updateGame = new Timeline(new KeyFrame(Duration.millis(10), event -> {
+            game.update(gc);
 
-                int healthy = 0, dead = 0, infected = 0, diagnosed = 0, immunise = 0;
+            updateValues();
 
-                for (Individual individual : game.getIndividuals()) {
-
-                   switch (individual.getState()) {
-                       case HEALTHY:
-                           healthy++;
-                           break;
-                       case DEAD:
-                           dead++;
-                           break;
-                       case INFECTED:
-                           infected++;
-                           break;
-                       case DIAGNOSED:
-                           diagnosed++;
-                           break;
-                       default:
-                           immunise++;
-                   }
-
-                }
-
-                System.out.println("*******************");
-                System.out.println("---------------");
-                System.out.println("healthy : " + healthy);
-                System.out.println("---------------");
-                System.out.println("diagnosed : " + diagnosed);
-                System.out.println("---------------");
-                System.out.println("immunise : " + immunise);
-                System.out.println("---------------");
-                System.out.println("infected : " + infected);
-                System.out.println("---------------");
-                System.out.println("dead : " + dead);
-
-            }
         }));
 
         updateGame.setCycleCount(Timeline.INDEFINITE);
@@ -147,6 +107,37 @@ public class MainController {
         }, 0, 10);*/
     }
 
+    private void updateValues() {
+
+        int nbHealthy = 0, nbInfected = 0, nbDiagnosed = 0, nbImmunise = 0;
+
+        for (Individual individual : game.getIndividuals()) {
+
+            switch (individual.getState()) {
+                case HEALTHY:
+                    nbHealthy++;
+                    break;
+                case INFECTED:
+                    nbInfected++;
+                    break;
+                case DIAGNOSED:
+                    nbDiagnosed++;
+                    break;
+                default:
+                    nbImmunise++;
+            }
+
+        }
+
+        healthy.setText(healthy.getText().replaceAll("\\d+", "" + nbHealthy));
+        infected.setText(infected.getText().replaceAll("\\d+", "" + nbInfected));
+        diagnosed.setText(diagnosed.getText().replaceAll("\\d+", "" + nbDiagnosed));
+        immune.setText(immune.getText().replaceAll("\\d+", "" + nbImmunise));
+        dead.setText(dead.getText().replaceAll("\\d+", "" + game.getDeadIndividuals().size()));
+
+
+    }
+
     public void pause () {
 
         if (updateGame.getStatus() == Animation.Status.PAUSED)
@@ -157,6 +148,8 @@ public class MainController {
     }
 
     public void backToMenu (ActionEvent event) throws IOException {
+
+        updateGame.stop();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fr/quentin/contagionsim/fxml/Accueil.fxml"));
         stage.setScene(new Scene(loader.load()));

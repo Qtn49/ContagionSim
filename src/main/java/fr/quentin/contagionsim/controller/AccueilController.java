@@ -7,8 +7,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -28,6 +30,9 @@ public class AccueilController {
 
     @FXML
     private Spinner<Double> vIndiv;
+
+    @FXML
+    private Button generer, run;
 
     public void setStage(Stage stage) {
         this.stage = stage;
@@ -64,6 +69,10 @@ public class AccueilController {
         }
 
         vIndiv.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 5, 0, 0.1));
+        tIndiv.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(5, 30, 0));
+
+        generer.setTooltip(new Tooltip("touche (g) pour générer"));
+        run.setTooltip(new Tooltip("touche (entrée) pour lancer"));
 
         stage.getScene().setOnKeyReleased(event -> {
             switch (event.getCode()) {
@@ -72,6 +81,9 @@ public class AccueilController {
                     break;
                 case ENTER:
                     run();
+                    break;
+                case G:
+                    generate();
                     break;
             }
         });
@@ -145,7 +157,7 @@ public class AccueilController {
             MainController controller = loader.getController();
             controller.setStage(stage);
                 controller.init();
-            controller.runGame(Integer.parseInt(nbIndiv.getEditor().getText()), Double.parseDouble(vIndiv.getEditor().getText()), Integer.parseInt(tIndiv.getEditor().getText()), Integer.parseInt(nbInfect.getEditor().getText()), Integer.parseInt(tContag.getEditor().getText()), Integer.parseInt(tMortal.getEditor().getText()));
+            controller.runGame(Integer.parseInt(nbIndiv.getEditor().getText()), Double.parseDouble(vIndiv.getEditor().getText()), Integer.parseInt(tIndiv.getEditor().getText()), Integer.parseInt(nbInfect.getEditor().getText()), Double.parseDouble(tContag.getEditor().getText()) / 100, Double.parseDouble(tMortal.getEditor().getText()) / 100);
 
         } catch (IOException e) {
             e.printStackTrace();
