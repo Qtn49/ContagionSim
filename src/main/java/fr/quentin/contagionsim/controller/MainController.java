@@ -1,17 +1,26 @@
-package controller;
+package fr.quentin.contagionsim.controller;
 
+import fr.quentin.contagionsim.model.Game;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
-import model.Game;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
+import java.io.IOException;
+
 /**
- * The main controller for the game.
+ * The main main.java.fr.quentin.contagionsim.controller for the game.
  * @author Quentin Cld
  */
 public class MainController {
@@ -22,12 +31,37 @@ public class MainController {
     @FXML
     private Canvas mainCanvas;
 
+    @FXML
+    private Stage stage;
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    /**
+     * init the length of the canvas
+     */
+    public void init() {
+
+        mainCanvas.widthProperty().bind(((AnchorPane) mainCanvas.getParent()).widthProperty());
+        mainCanvas.heightProperty().bind(((AnchorPane) mainCanvas.getParent()).heightProperty());
+
+        mainCanvas.setCursor(Cursor.DEFAULT);
+
+    }
+
     /**
      * Function used to run the game. The game update every 10ms. Changing this value
      * may cause unexpected behaviours.
      */
+//    public void runGame(int nbIndiv, int vIndiv, int tIndiv, int tauxIndiv, int tauxContag, int tauxMortal) {
     public void runGame() {
         Game game = new Game((int)mainCanvas.getWidth(), (int)mainCanvas.getHeight());
+
         game.initialise();
 
         GraphicsContext gc = mainCanvas.getGraphicsContext2D();
@@ -57,4 +91,15 @@ public class MainController {
             }
         }, 0, 10);*/
     }
+
+    public void backToMenu (ActionEvent event) throws IOException {
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fr/quentin/contagionsim/fxml/Accueil.fxml"));
+        stage.setScene(new Scene(loader.load()));
+        AccueilController controller = loader.getController();
+        controller.setStage(stage);
+        controller.init();
+
+    }
+
 }

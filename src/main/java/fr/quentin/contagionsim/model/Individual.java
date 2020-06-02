@@ -1,4 +1,4 @@
-package model;
+package fr.quentin.contagionsim.model;
 
 import javafx.scene.paint.Color;
 
@@ -9,7 +9,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Quentin Cld
  */
 public class Individual {
+
     /**
+     * from https://www.worldometers.info/coronavirus/coronavirus-death-rate/ the probability of dying is 0.28%
      * The chance of death for an individual that is infected with disease
      */
     private static final double CHANCE_OF_DEATH = 0.06;
@@ -203,21 +205,15 @@ public class Individual {
 
     /**
      * This function is called each step to compute the direction and the distance traveled
-     * by an individual. It also checks for direction change.
-     * @see #changeDirection(int, int)
-     * @param x_limit The width of the canvas (representing the space available
-     *                to the individuals).
-     * @param y_limit The height of the canvas (representing the space available
-     *                to the individuals).
+     * by an individual.
      */
-    public void move(int x_limit, int y_limit) {
+    public void move() {
         true_x = true_x + speed * Math.cos(direction * Math.PI / 180);
         true_y = true_y + speed * Math.sin(direction * Math.PI / 180);
 
         x = (int) true_x;
         y = (int) true_y;
 
-        changeDirection(x_limit, y_limit);
     }
 
     /**
@@ -278,7 +274,7 @@ public class Individual {
     /**
      * This function is called each step, for each individual. It takes care of checking the state of the individual,
      * moving it and changing its state.
-     * @see #move(int, int)
+     * @see #move()
      * @param x_limit The width of the canvas (representing the space available
      *                to the individuals).
      * @param y_limit The height of the canvas (representing the space available
@@ -288,7 +284,8 @@ public class Individual {
         if (state == State.DEAD)
             return;
 
-        move(x_limit, y_limit);
+        move();
+        changeDirection(x_limit, y_limit);
 
         if (state == State.INFECTED || state == State.DIAGNOSED) {
             timeInfected++;

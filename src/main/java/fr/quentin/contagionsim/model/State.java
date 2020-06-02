@@ -1,4 +1,4 @@
-package model;
+package fr.quentin.contagionsim.model;
 
 /**
  * This enumeration is used to describe the current state of an individual.

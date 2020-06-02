@@ -1,4 +1,4 @@
-package model;
+package fr.quentin.contagionsim.model;
 
 import javafx.scene.paint.Color;
 

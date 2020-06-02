@@ -1,8 +1,10 @@
-package model;
+package fr.quentin.contagionsim.model;
 
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * This class manages the game (initialising, drawing, balls collision, state update, game update).
@@ -81,10 +83,11 @@ public class Game {
             individuals.add(individual);
         }
 
-        individual = new Individual(width, height, State.INFECTED);
-        while (!canPlace(individual)) {
+//        individual = new Individual(width, height, State.INFECTED);
+        do {
             individual = new Individual(width, height, State.INFECTED);
-        }
+        } while (!canPlace(individual));
+
         individuals.add(individual);
     }
 
@@ -154,16 +157,16 @@ public class Game {
      * to reduce the number of collision checking.
      */
     private void checkForCollision() {
-        ArrayList<Integer> AlreadyDoneIndex = new ArrayList<>();
+        ArrayList<Integer> alreadyDoneIndex = new ArrayList<>();
 
         for (int i = 0; i < individuals.size(); i++) {
-            if (!AlreadyDoneIndex.contains(i)) {
+            if (!alreadyDoneIndex.contains(i)) {
                 for (int j = 0; j < individuals.size(); j++) {
                     if (i != j) {
                         if (individuals.get(i).collideWith(individuals.get(j))) {
                             makeCollision(individuals.get(i), individuals.get(j));
                             checkHealth(individuals.get(i), individuals.get(j));
-                            AlreadyDoneIndex.add(j);
+                            alreadyDoneIndex.add(j);
                         }
                     }
                 }
@@ -194,6 +197,8 @@ public class Game {
                 diagnosedCases++;
             }
         }
+
+        toRemove.sort(Collections.reverseOrder());
 
         for (int idx: toRemove) {
             deadIndividuals.add(individuals.get(idx));
