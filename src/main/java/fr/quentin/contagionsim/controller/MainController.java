@@ -1,6 +1,8 @@
 package fr.quentin.contagionsim.controller;
 
 import fr.quentin.contagionsim.model.Game;
+import fr.quentin.contagionsim.model.Individual;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -34,6 +36,7 @@ public class MainController {
     @FXML
     private Stage stage;
     private Game game;
+    private Timeline updateGame;
 
     public Stage getStage() {
         return stage;
@@ -48,8 +51,14 @@ public class MainController {
      */
     public void init() {
 
-        mainCanvas.widthProperty().bind(((AnchorPane) mainCanvas.getParent()).widthProperty());
-        mainCanvas.heightProperty().bind(((AnchorPane) mainCanvas.getParent()).heightProperty());
+        stage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            mainCanvas.widthProperty().bind(((AnchorPane) mainCanvas.getParent()).widthProperty());
+            mainCanvas.heightProperty().bind(((AnchorPane) mainCanvas.getParent()).heightProperty());
+            if (game != null) {
+                game.setWidth((int) mainCanvas.getWidth());
+                game.setHeight((int) mainCanvas.getHeight());
+            }
+        });
 
         mainCanvas.setCursor(Cursor.DEFAULT);
 
@@ -59,9 +68,11 @@ public class MainController {
      * Function used to run the game. The game update every 10ms. Changing this value
      * may cause unexpected behaviours.
      */
-    public void runGame(int nbIndiv, int vIndiv, int tIndiv, int tauxIndiv, int tauxContag, int tauxMortal) {
+    public void runGame(int nbIndiv, double vIndiv, int tIndiv, int tauxIndiv, int tauxContag, int tauxMortal) {
 
-        game = new Game((int) mainCanvas.getWidth(), (int) mainCanvas.getHeight(), nbIndiv);
+        int personnesInfectesDepart = (int) (tauxIndiv / 100.0 * nbIndiv);
+
+        game = new Game((int) mainCanvas.getWidth(), (int) mainCanvas.getHeight(), nbIndiv, vIndiv, tIndiv, personnesInfectesDepart);
 
         runGame();
 
@@ -74,11 +85,47 @@ public class MainController {
 
         GraphicsContext gc = mainCanvas.getGraphicsContext2D();
 
-        Timeline updateGame = new Timeline(new KeyFrame(Duration.millis(10), new EventHandler<ActionEvent>() {
+        updateGame = new Timeline(new KeyFrame(Duration.millis(10), new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
                 game.update(gc);
+
+                int healthy = 0, dead = 0, infected = 0, diagnosed = 0, immunise = 0;
+
+                for (Individual individual : game.getIndividuals()) {
+
+                   switch (individual.getState()) {
+                       case HEALTHY:
+                           healthy++;
+                           break;
+                       case DEAD:
+                           dead++;
+                           break;
+                       case INFECTED:
+                           infected++;
+                           break;
+                       case DIAGNOSED:
+                           diagnosed++;
+                           break;
+                       default:
+                           immunise++;
+                   }
+
+                }
+
+                System.out.println("*******************");
+                System.out.println("---------------");
+                System.out.println("healthy : " + healthy);
+                System.out.println("---------------");
+                System.out.println("diagnosed : " + diagnosed);
+                System.out.println("---------------");
+                System.out.println("immunise : " + immunise);
+                System.out.println("---------------");
+                System.out.println("infected : " + infected);
+                System.out.println("---------------");
+                System.out.println("dead : " + dead);
+
             }
         }));
 
@@ -98,6 +145,15 @@ public class MainController {
                 game.update(gc);
             }
         }, 0, 10);*/
+    }
+
+    public void pause () {
+
+        if (updateGame.getStatus() == Animation.Status.PAUSED)
+            updateGame.play();
+        else
+            updateGame.pause();
+
     }
 
     public void backToMenu (ActionEvent event) throws IOException {

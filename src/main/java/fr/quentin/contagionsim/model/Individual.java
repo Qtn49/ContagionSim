@@ -11,10 +11,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Individual {
 
     /**
-     * from https://www.worldometers.info/coronavirus/coronavirus-death-rate/ the probability of dying is 0.28%
      * The chance of death for an individual that is infected with disease
      */
-    private static final double CHANCE_OF_DEATH = 0.06;
+    private double CHANCE_OF_DEATH = 0.06;
 
     /**
      * The x position of the individual
@@ -133,6 +132,14 @@ public class Individual {
 
     public void setDirection(double direction) {
         this.direction = direction;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    public void setCHANCE_OF_DEATH(double CHANCE_OF_DEATH) {
+        this.CHANCE_OF_DEATH = CHANCE_OF_DEATH;
     }
 
     public Individual() {

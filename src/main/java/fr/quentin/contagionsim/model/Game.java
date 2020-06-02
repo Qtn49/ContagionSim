@@ -16,7 +16,10 @@ public class Game {
      * Le pourncetage minimal de personnes diagnostiquées positives pour déclencher le confinement
      */
     private final static float CONTAINMENT_MIN_PEOPLE_PERCENTAGE = 0.25f;
-    public static final int SPEED_DEFAULT = 1;
+    public static final int NBINDIV_DEFAULT = 99;
+    public static final int V_INDIV_DEFAULT = 1;
+    public static final int T_INDIV_DEFAULT = 10;
+    public static final int PERSONNES_INFECTES_DEPART_DEFAULT = 1;
 
     /**
      * Liste des individus
@@ -50,23 +53,49 @@ public class Game {
 
     private int nbIndiv;
 
-    public Game(int width, int height   ) {
-        individuals = new ArrayList<>();
-        deadIndividuals = new ArrayList<>();
-        this.width = width;
-        this.height = height;
+    private double vIndiv;
+
+    private int tIndiv;
+
+    private int personnesInfectesDepart;
+
+    public Game(int width, int height) {
+        this(width, height, NBINDIV_DEFAULT, V_INDIV_DEFAULT, T_INDIV_DEFAULT, PERSONNES_INFECTES_DEPART_DEFAULT);
     }
 
-    public Game(int width, int height, int nbIndiv) {
+    public Game(int width, int height, int nbIndiv, double vIndiv, int tIndiv, int personnesInfectesDepart) {
         individuals = new ArrayList<>();
         deadIndividuals = new ArrayList<>();
         this.width = width;
         this.height = height;
         this.nbIndiv = nbIndiv;
+        this.vIndiv = vIndiv;
+        this.tIndiv = tIndiv;
+        this.personnesInfectesDepart = personnesInfectesDepart;
     }
 
     public Game(Game game) {
-        this(game.width, game.height, game.nbIndiv);
+        this(game.width, game.height, game.nbIndiv, game.vIndiv, game.tIndiv, game.personnesInfectesDepart);
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public ArrayList<Individual> getIndividuals() {
+        return individuals;
     }
 
     /**
@@ -89,22 +118,23 @@ public class Game {
      */
     public void initialise() {
         Individual individual;
-        boolean canPlace = true;
-        for (int i = 0; i < nbIndiv; i++) {
-            individual = new Individual(width, height, State.HEALTHY);
-//            individual.setSpeed(10);
-            while (!canPlace(individual))
-                individual = new Individual(width, height, State.HEALTHY);
+        State state = State.INFECTED;
 
+        for (int i = 0; i < nbIndiv; i++) {
+
+            if (i >= personnesInfectesDepart - 1) {
+                state = State.HEALTHY;
+            }
+
+            do {
+                individual = new Individual(width, height, state);
+            }while (!canPlace(individual));
+
+            individual.setSpeed(vIndiv);
+            individual.setRadius(tIndiv);
             individuals.add(individual);
         }
 
-//        individual = new Individual(width, height, State.INFECTED);
-        do {
-            individual = new Individual(width, height, State.INFECTED);
-        } while (!canPlace(individual));
-
-        individuals.add(individual);
     }
 
     /**
