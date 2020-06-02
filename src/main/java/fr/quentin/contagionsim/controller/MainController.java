@@ -33,6 +33,7 @@ public class MainController {
 
     @FXML
     private Stage stage;
+    private Game game;
 
     public Stage getStage() {
         return stage;
@@ -58,9 +59,16 @@ public class MainController {
      * Function used to run the game. The game update every 10ms. Changing this value
      * may cause unexpected behaviours.
      */
-//    public void runGame(int nbIndiv, int vIndiv, int tIndiv, int tauxIndiv, int tauxContag, int tauxMortal) {
+    public void runGame(int nbIndiv, int vIndiv, int tIndiv, int tauxIndiv, int tauxContag, int tauxMortal) {
+
+        game = new Game((int) mainCanvas.getWidth(), (int) mainCanvas.getHeight(), nbIndiv);
+
+        runGame();
+
+    }
     public void runGame() {
-        Game game = new Game((int)mainCanvas.getWidth(), (int)mainCanvas.getHeight());
+
+        Game game = new Game(this.game);
 
         game.initialise();
 

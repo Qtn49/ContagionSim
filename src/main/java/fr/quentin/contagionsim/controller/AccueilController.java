@@ -92,8 +92,7 @@ public class AccueilController {
             MainController controller = loader.getController();
             controller.setStage(stage);
             controller.init();
-//            controller.runGame(nbIndiv.getValue(), vIndiv.getValue(), tIndiv.getValue(), nbInfect.getValue(), tContag.getValue(), tMortal.getValue());
-            controller.runGame();
+            controller.runGame(nbIndiv.getValue(), vIndiv.getValue(), tIndiv.getValue(), nbInfect.getValue(), tContag.getValue(), tMortal.getValue());
 
         } catch (IOException e) {
             e.printStackTrace();

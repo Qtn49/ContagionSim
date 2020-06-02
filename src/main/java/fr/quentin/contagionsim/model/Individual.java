@@ -19,64 +19,64 @@ public class Individual {
     /**
      * The x position of the individual
      */
-    int x;
+    private int x;
 
     /**
      * The y position of the individual
      */
-    int y;
+    private int y;
 
     /**
      * The direction in x of the individual
      */
-    int dx;
+    private int dx;
 
     /**
      * The direction in y of the individual
      */
-    int dy;
+    private int dy;
 
     /**
      * The size of the individual
      */
-    int radius;
+    private int radius;
 
     /**
      * The x position of the individual as a float
      */
-    double true_x;
+    private double true_x;
 
     /**
      * The y position of the individual as a float
      */
-    double true_y;
+    private double true_y;
 
     /**
      * The speed of the individual
      */
-    double speed;
+    private double speed;
 
     /**
      * The direction of the individual, as an angle (0 - 360)
      */
-    double direction;
+    private double direction;
 
     /**
      * The colour of the individual
      * @see HealthColour
      */
-    Color colour;
+    private Color colour;
 
     /**
      * The state of the individual
      * @see State
      */
-    State state;
+    private State state;
 
     /**
      * The number of iteration the individual has been infected
      */
-    int timeInfected = 0;
+    private int timeInfected = 0;
 
     public int getX() {
         return x;

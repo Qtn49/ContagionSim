@@ -16,6 +16,7 @@ public class Game {
      * Le pourncetage minimal de personnes diagnostiquées positives pour déclencher le confinement
      */
     private final static float CONTAINMENT_MIN_PEOPLE_PERCENTAGE = 0.25f;
+    public static final int SPEED_DEFAULT = 1;
 
     /**
      * Liste des individus
@@ -47,11 +48,25 @@ public class Game {
      */
     private boolean lockdown = false;
 
-    public Game(int width, int height) {
+    private int nbIndiv;
+
+    public Game(int width, int height   ) {
         individuals = new ArrayList<>();
         deadIndividuals = new ArrayList<>();
         this.width = width;
         this.height = height;
+    }
+
+    public Game(int width, int height, int nbIndiv) {
+        individuals = new ArrayList<>();
+        deadIndividuals = new ArrayList<>();
+        this.width = width;
+        this.height = height;
+        this.nbIndiv = nbIndiv;
+    }
+
+    public Game(Game game) {
+        this(game.width, game.height, game.nbIndiv);
     }
 
     /**
@@ -75,8 +90,9 @@ public class Game {
     public void initialise() {
         Individual individual;
         boolean canPlace = true;
-        for (int i = 0; i < 99; i++) {
+        for (int i = 0; i < nbIndiv; i++) {
             individual = new Individual(width, height, State.HEALTHY);
+//            individual.setSpeed(10);
             while (!canPlace(individual))
                 individual = new Individual(width, height, State.HEALTHY);
 
