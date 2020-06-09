@@ -2,32 +2,41 @@ package fr.quentin.contagionsim.controller;
 
 import fr.quentin.contagionsim.model.Game;
 import fr.quentin.contagionsim.model.Individual;
+import fr.quentin.contagionsim.model.State;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ResourceBundle;
 
 /**
  * The main main.java.fr.quentin.contagionsim.controller for the game.
  * @author Quentin Cld
  */
-public class MainController {
+public class MainController implements Initializable {
 
     /**
      * The canvas used to draw the game
@@ -52,7 +61,8 @@ public class MainController {
     /**
      * init the length of the canvas
      */
-    public void init() {
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
 
         mainCanvas.setCursor(Cursor.DEFAULT);
 
@@ -66,12 +76,24 @@ public class MainController {
 
         int personnesInfectesDepart = (int) (tauxIndiv / 100.0 * nbIndiv);
 
+        int longueur;
+        double squareRoot = Math.sqrt(nbIndiv);
+
+//        mainCanvas.getScene().getWindow().setWidth();
+
         game = new Game((int) mainCanvas.getWidth(), (int) mainCanvas.getHeight(), nbIndiv, vIndiv, tIndiv, personnesInfectesDepart, tauxContag, tauxMortal);
+
+        System.out.println("max x : " + game.getWidth() + "\nmax y : " + game.getHeight() + "\nindivRadius : " + tIndiv + "\n");
+
+//        System.out.println(((HBox) mainCanvas.getParent()).getWidth());
+//        System.out.println(longueur);
 
         runGame();
 
     }
     public void runGame() {
+
+//        showGraph();
 
         game = new Game(this.game);
 
@@ -81,6 +103,10 @@ public class MainController {
 
         if (updateGame != null)
             updateGame.stop();
+
+//        gc.fillOval(game.getWidth() - game.getIndividuals().get(0).getRadius(), game.getHeight() - game.getIndividuals().get(0).getRadius(), game.getIndividuals().get(0).getRadius(), game.getIndividuals().get(0).getRadius());
+
+//        game.update(gc);
 
         updateGame = new Timeline(new KeyFrame(Duration.millis(10), event -> {
             game.update(gc);
@@ -109,31 +135,11 @@ public class MainController {
 
     private void updateValues() {
 
-        int nbHealthy = 0, nbInfected = 0, nbDiagnosed = 0, nbImmunise = 0;
-
-        for (Individual individual : game.getIndividuals()) {
-
-            switch (individual.getState()) {
-                case HEALTHY:
-                    nbHealthy++;
-                    break;
-                case INFECTED:
-                    nbInfected++;
-                    break;
-                case DIAGNOSED:
-                    nbDiagnosed++;
-                    break;
-                default:
-                    nbImmunise++;
-            }
-
-        }
-
-        healthy.setText(healthy.getText().replaceAll("\\d+", "" + nbHealthy));
-        infected.setText(infected.getText().replaceAll("\\d+", "" + nbInfected));
-        diagnosed.setText(diagnosed.getText().replaceAll("\\d+", "" + nbDiagnosed));
-        immune.setText(immune.getText().replaceAll("\\d+", "" + nbImmunise));
-        dead.setText(dead.getText().replaceAll("\\d+", "" + game.getDeadIndividuals().size()));
+        healthy.setText(healthy.getText().replaceAll("\\d+", "" + game.getStats(State.HEALTHY)));
+        infected.setText(infected.getText().replaceAll("\\d+", "" + game.getStats(State.INFECTED)));
+        diagnosed.setText(diagnosed.getText().replaceAll("\\d+", "" + game.getStats(State.DIAGNOSED)));
+        immune.setText(immune.getText().replaceAll("\\d+", "" + game.getStats(State.IMMUNE)));
+        dead.setText(dead.getText().replaceAll("\\d+", "" + game.getStats(State.DEAD)));
 
 
     }
@@ -149,13 +155,43 @@ public class MainController {
 
     public void backToMenu (ActionEvent event) throws IOException {
 
-        updateGame.stop();
+        if (updateGame != null)
+            updateGame = null;
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fr/quentin/contagionsim/fxml/Accueil.fxml"));
         stage.setScene(new Scene(loader.load()));
         AccueilController controller = loader.getController();
         controller.setStage(stage);
         controller.init();
+
+    }
+
+    public void showGraph () {
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fr/quentin/contagionsim/fxml/Graph.fxml"));
+        Stage stage = new Stage();
+        try {
+            stage.setScene(new Scene(loader.load()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        stage.initModality(Modality.APPLICATION_MODAL);
+
+        stage.show();
+
+        GraphController controller = loader.getController();
+        controller.setGame(game);
+        controller.chargerDonnees();
+
+        stage.getScene().setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                controller.close();
+                stage.close();
+            }
+        });
+
+        stage.setOnCloseRequest(event -> controller.close());
 
     }
 

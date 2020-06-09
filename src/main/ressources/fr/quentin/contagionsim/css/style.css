@@ -1,3 +1,9 @@
 #title {
 
 }
+
+.healthy {
+    -fx-stroke: cadetblue;
+    -fx-stroke-width: 2px;
+    -fx-background-color: cadetblue, white;
+}

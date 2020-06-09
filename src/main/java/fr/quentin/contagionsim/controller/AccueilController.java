@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -68,6 +69,7 @@ public class AccueilController {
 
         }
 
+        nbIndiv.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 200, 0));
         vIndiv.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 5, 0, 0.1));
         tIndiv.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(5, 30, 0));
 
@@ -146,6 +148,31 @@ public class AccueilController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fr/quentin/contagionsim/fxml/Game.fxml"));
             Parent parent = loader.load();
+
+            int nbIndiv = Integer.parseInt(this.nbIndiv.getEditor().getText()), tIndiv = Integer.parseInt(this.tIndiv.getEditor().getText()), nbInfect = Integer.parseInt(this.nbInfect.getEditor().getText());
+            double vIndiv = Double.parseDouble(this.vIndiv.getEditor().getText()), tContag = Double.parseDouble(this.tContag.getEditor().getText()) / 100, tMortal = Double.parseDouble(this.tMortal.getEditor().getText()) / 100;
+
+            int longueur;
+            double squareRoot = Math.sqrt(nbIndiv);
+
+            Canvas mainCanvas = (Canvas) loader.getNamespace().get("mainCanvas");
+
+            // check if nbIndiv is a perfect square (formula from Anouar Anefaoui)
+            if (squareRoot - Math.floor(squareRoot) == 0) {
+                longueur = (int) (squareRoot * (2 * tIndiv + 1) + 1);
+            }else
+                longueur = (int) (2 * (tIndiv + 1) + Math.floor(squareRoot) * (2 * tIndiv + 1));
+
+            ((HBox) mainCanvas.getParent()).setPrefWidth(longueur);
+            ((HBox) mainCanvas.getParent()).setPrefHeight(longueur);
+
+            mainCanvas.setWidth(longueur);
+            mainCanvas.setHeight(longueur);
+
+            MainController controller = loader.getController();
+            controller.setStage(stage);
+            controller.runGame(nbIndiv, vIndiv, tIndiv, nbInfect, tContag, tMortal);
+
             stage.setScene(new Scene(parent));
             stage.show();
 
@@ -153,11 +180,6 @@ public class AccueilController {
                 if (event.getCode() == KeyCode.ESCAPE)
                     Platform.exit();
             });
-
-            MainController controller = loader.getController();
-            controller.setStage(stage);
-                controller.init();
-            controller.runGame(Integer.parseInt(nbIndiv.getEditor().getText()), Double.parseDouble(vIndiv.getEditor().getText()), Integer.parseInt(tIndiv.getEditor().getText()), Integer.parseInt(nbInfect.getEditor().getText()), Double.parseDouble(tContag.getEditor().getText()) / 100, Double.parseDouble(tMortal.getEditor().getText()) / 100);
 
         } catch (IOException e) {
             e.printStackTrace();

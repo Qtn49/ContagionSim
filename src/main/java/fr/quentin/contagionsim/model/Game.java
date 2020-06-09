@@ -106,8 +106,17 @@ public class Game {
      * @return True if there's no collision, false otherwise.
      */
     private boolean canPlace(Individual individual) {
-        for (int j = 0; j < individuals.size(); j++) {
-            if (individual.collideWith(individuals.get(j))) {
+//
+//        if (individual.getY() <= 0 || individual.getX() <= 0)
+//            return false;
+//
+//        if (individual.getX() >= width - individual.getRadius() * 2 || individual.getY() >= height - individual.getRadius() * 2) {
+//            System.out.println("x : " + individual.getX() + "\ny : " + individual.getY());
+//            return false;
+//        }
+
+        for (Individual value : individuals) {
+            if (individual.collideWith(value)) {
                 return false;
             }
         }
@@ -263,4 +272,25 @@ public class Game {
         drawBallsOnCanvas(gc);
         iter++;
     }
+
+    public int getStats (State state) {
+
+        if (state == State.DEAD) {
+            return deadIndividuals.size();
+        }
+
+        int compteur = 0;
+
+        for (Individual individual : individuals) {
+
+            if (individual.getState() == state) {
+                compteur++;
+            }
+
+        }
+
+        return compteur;
+
+    }
+
 }

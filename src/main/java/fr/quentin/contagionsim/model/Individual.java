@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * This class represents an individual member of the population.
- * @author Quentin Cld
+ * @author Quentin Cld 
  */
 public class Individual {
 
@@ -145,62 +145,27 @@ public class Individual {
     }
 
     public Individual() {
-        radius = 10;
 
-        x = 50;
-        y = 50;
-        true_x = x;
-        true_y = y;
+        this(50, 50);
 
-        dx = Math.random() > 0.5? 1: -1;
-        dy = Math.random() > 0.5? 1: -1;
-        speed = 1;
-        initSpeed = 1;
-        direction = (int) (Math.random() * 360);
-
-        state = State.HEALTHY;
-        colour = HealthColour.get(state);
     }
 
     public Individual(int max_x, int max_y) {
-        radius = 10;
-
-        x = ThreadLocalRandom.current().nextInt(radius + 1, max_x - radius);
-        y = ThreadLocalRandom.current().nextInt(radius + 1, max_y - radius);
-        true_x = x;
-        true_y = y;
-
-        dx = Math.random() > 0.5? 1: -1;
-        dy = Math.random() > 0.5? 1: -1;
-        speed = 1;
-        direction = (int) (Math.random() * 360);
-
-        state = State.HEALTHY;
-        colour = HealthColour.get(state);
+        this(max_x, max_y, State.HEALTHY);
     }
 
+    // A small correction for the x and y
     public Individual(int max_x, int max_y, State state) {
-        radius = 10;
 
-        x = ThreadLocalRandom.current().nextInt(radius + 1, max_x - radius);
-        y = ThreadLocalRandom.current().nextInt(radius + 1, max_y - radius);
-        true_x = x;
-        true_y = y;
+        this(max_x, max_y, state, 1);
 
-        dx = Math.random() > 0.5? 1: -1;
-        dy = Math.random() > 0.5? 1: -1;
-        speed = 1;
-        direction = (int) (Math.random() * 360);
-
-        this.state = state;
-        colour = HealthColour.get(state);
     }
 
-    public Individual(int max_x, int max_y, float speed) {
+    public Individual(int max_x, int max_y, State state, float speed) {
         radius = 10;
 
-        x = ThreadLocalRandom.current().nextInt(radius + 1, max_x - radius);
-        y = ThreadLocalRandom.current().nextInt(radius + 1, max_y - radius);
+        x = ThreadLocalRandom.current().nextInt(1, max_x - radius * 2);
+        y = ThreadLocalRandom.current().nextInt(1, max_y - radius * 2);
         true_x = x;
         true_y = y;
 
@@ -209,7 +174,7 @@ public class Individual {
         this.speed = speed;
         direction = (int) (Math.random() * 360);;
 
-        state = State.HEALTHY;
+        this.state = state;
         colour = HealthColour.get(state);
     }
 
@@ -235,7 +200,12 @@ public class Individual {
      *                to the individuals).
      */
     private void changeDirection(int x_limit, int y_limit) {
-        if (y < radius + 1) {
+
+        /*
+         * corrected a small mistake : it was adding the radius although I believe in java or at least in javafx
+         * the position of an ellipse isn't in the center of it but it seems more like it's at the top left of the element
+         */
+        if (y <= 0) {
             if (dx == 1)
                 direction -= direction * 2;
             else
@@ -244,7 +214,7 @@ public class Individual {
             dx -= dx;
         }
 
-        if (y > y_limit - radius - 1) {
+        if (y >= y_limit - radius) {
             if (dx == 1)
                 direction += (360 - direction) * 2;
             else
@@ -253,7 +223,7 @@ public class Individual {
             dx -= dx;
         }
 
-        if (x < radius + 1) {
+        if (x < 0) {
             if (dy == 1)
                 direction += (270 - direction) * 2;
             else
@@ -262,7 +232,7 @@ public class Individual {
             dy -= dy;
         }
 
-        if (x > x_limit - radius - 1) {
+        if (x >= x_limit - radius) {
             if (dy == 1)
                 direction -= (direction - 270) * 2;
             else
