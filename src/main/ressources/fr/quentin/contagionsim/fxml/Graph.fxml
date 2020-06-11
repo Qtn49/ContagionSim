@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.quentin.contagionsim.controller.GraphController" stylesheets="/fr/quentin/contagionsim/css/style.css" />
+<VBox fx:id="container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" stylesheets="/fr/quentin/contagionsim/css/style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.quentin.contagionsim.controller.GraphController">
+   <children>
+      <LineChart fx:id="lineChart" title="Évolution de l'épidémie">
+        <xAxis>
+          <NumberAxis label="Temps" side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis label="Nombre d'individu" side="LEFT" />
+        </yAxis>
+      </LineChart>
+   </children>
+</VBox>

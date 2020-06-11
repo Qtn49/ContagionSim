@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
@@ -44,6 +45,9 @@ public class MainController implements Initializable {
     @FXML
     private Canvas mainCanvas;
 
+    private FXMLLoader graph;
+    private Stage graphStage;
+
     @FXML
     private Label healthy, infected, diagnosed, immune, dead;
     private Stage stage;
@@ -68,38 +72,36 @@ public class MainController implements Initializable {
 
     }
 
-    /**
-     * Function used to run the game. The game update every 10ms. Changing this value
-     * may cause unexpected behaviours.
-     */
-    public void runGame(int nbIndiv, double vIndiv, int tIndiv, int tauxIndiv, double tauxContag, double tauxMortal) {
-
-        int personnesInfectesDepart = (int) (tauxIndiv / 100.0 * nbIndiv);
-
-        int longueur;
-        double squareRoot = Math.sqrt(nbIndiv);
-
-//        mainCanvas.getScene().getWindow().setWidth();
-
-        game = new Game((int) mainCanvas.getWidth(), (int) mainCanvas.getHeight(), nbIndiv, vIndiv, tIndiv, personnesInfectesDepart, tauxContag, tauxMortal);
-
-        System.out.println("max x : " + game.getWidth() + "\nmax y : " + game.getHeight() + "\nindivRadius : " + tIndiv + "\n");
-
-//        System.out.println(((HBox) mainCanvas.getParent()).getWidth());
-//        System.out.println(longueur);
-
-        runGame();
-
+    public void runGame () {
+        runGame(game);
     }
-    public void runGame() {
 
-//        showGraph();
+    public void runGame(Game game) {
 
-        game = new Game(this.game);
+        this.game = game;
 
         game.initialise();
 
         GraphicsContext gc = mainCanvas.getGraphicsContext2D();
+
+        graph = new FXMLLoader(getClass().getResource("/fr/quentin/contagionsim/fxml/Graph.fxml"));
+        graphStage = new Stage();
+        try {
+            graphStage.setScene(new Scene(graph.load()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        GraphController graphController = graph.getController();
+        graphController.setGame(game);
+        graphController.init();
+
+        graphStage.show();
+
+        graphStage.getScene().setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.ESCAPE)
+                graphStage.close();
+        });
 
         if (updateGame != null)
             updateGame.stop();
@@ -107,6 +109,10 @@ public class MainController implements Initializable {
 //        gc.fillOval(game.getWidth() - game.getIndividuals().get(0).getRadius(), game.getHeight() - game.getIndividuals().get(0).getRadius(), game.getIndividuals().get(0).getRadius(), game.getIndividuals().get(0).getRadius());
 
 //        game.update(gc);
+
+        Timeline updateGraph = new Timeline(new KeyFrame(Duration.millis(100), event -> {
+            graphController.run();
+        }));
 
         updateGame = new Timeline(new KeyFrame(Duration.millis(10), event -> {
             game.update(gc);
@@ -117,6 +123,8 @@ public class MainController implements Initializable {
 
         updateGame.setCycleCount(Timeline.INDEFINITE);
         updateGame.play();
+        updateGraph.setCycleCount(Timeline.INDEFINITE);
+        updateGraph.play();
 
         // ---------------------------------------------------------------------------------------------------
         // This way of updating seems to cause Java to think that he can dispose of some data,
@@ -168,30 +176,7 @@ public class MainController implements Initializable {
 
     public void showGraph () {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fr/quentin/contagionsim/fxml/Graph.fxml"));
-        Stage stage = new Stage();
-        try {
-            stage.setScene(new Scene(loader.load()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        stage.initModality(Modality.APPLICATION_MODAL);
-
-        stage.show();
-
-        GraphController controller = loader.getController();
-        controller.setGame(game);
-        controller.chargerDonnees();
-
-        stage.getScene().setOnKeyReleased(event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                controller.close();
-                stage.close();
-            }
-        });
-
-        stage.setOnCloseRequest(event -> controller.close());
+        graphStage.show();
 
     }
 
